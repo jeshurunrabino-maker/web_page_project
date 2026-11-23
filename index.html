@@ -8,35 +8,68 @@
   <meta name="theme-color" content="#0033A0" />
   <link rel="icon" type="image/png" href="./logo.png" />
   <link rel="apple-touch-icon" href="./logo.png" />
-  <script>try{var m=localStorage.getItem('qr-theme')||'light';document.documentElement.dataset.theme=(m==='dark'||(m==='system'&&matchMedia('(prefers-color-scheme: dark)').matches))?'dark':'light'}catch(e){}</script>
+
+  <!-- Apply saved or system color theme before first paint to prevent flash -->
+  <script>
+    try {
+      var savedMode = localStorage.getItem('qr-theme') || 'light';
+      var prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.dataset.theme = (savedMode === 'dark' || (savedMode === 'system' && prefersDark)) ? 'dark' : 'light';
+    } catch (e) {}
+  </script>
+
   <link rel="stylesheet" href="./style.css" />
+
+  <!-- Load shared utilities and loop engine before dependent UI modules -->
+  <script src="./js/utils.js" defer></script>
+  <script src="./js/theme.js" defer></script>
+  <script src="./js/navigation.js" defer></script>
+  <script src="./js/looping.js" defer></script>
+  <script src="./js/converter.js" defer></script>
+  <script src="./js/tax.js" defer></script>
+  <script src="./js/payroll.js" defer></script>
   <script src="./app.js" defer></script>
 </head>
 <body id="top">
-  <!-- 1. STICKY HEADER & NAVIGATION -->
   <header class="site-header">
     <div class="container header-inner">
-      <a href="#top" class="brand-logo" aria-label="Quad Reckoner home"><img src="./logo.png" alt="" width="36" height="36" class="brand-img" /><span class="brand-text">Quad Reckoner</span></a>
+      <a class="brand-logo" href="#top" aria-label="Quad Reckoner home">
+        <img class="brand-img" src="./logo.png" alt="" width="36" height="36" />
+        <span class="brand-text">Quad Reckoner</span>
+      </a>
 
       <nav class="desktop-nav" aria-label="Primary Navigation">
-        <a href="#sec-tools" class="header-link">Modules</a>
-        <a href="#sec-workspace" class="header-link">Workspace</a>
-        <a href="#sec-faq" class="header-link">FAQ</a>
+        <a class="header-link" href="#sec-tools">Modules</a>
+        <a class="header-link" href="#sec-workspace">Workspace</a>
+        <a class="header-link" href="#sec-faq">FAQ</a>
       </nav>
 
       <div class="header-actions">
         <div class="theme-menu">
-          <button type="button" id="theme-btn" class="theme-btn" aria-haspopup="dialog" aria-expanded="false" aria-controls="theme-panel"><span class="theme-swatch" aria-hidden="true"></span><span>Theme</span></button>
+          <button
+            id="theme-btn"
+            class="theme-btn"
+            type="button"
+            aria-haspopup="dialog"
+            aria-expanded="false"
+            aria-controls="theme-panel"
+          >
+            <span class="theme-swatch" aria-hidden="true"></span>
+            <span>Theme</span>
+          </button>
         </div>
+
         <button
-          type="button"
           id="mobile-nav-btn"
           class="mobile-menu-btn"
+          type="button"
           aria-expanded="false"
           aria-controls="mobile-nav-drawer"
           aria-label="Toggle navigation menu"
         >
-          <span></span><span></span><span></span>
+          <span></span>
+          <span></span>
+          <span></span>
         </button>
       </div>
     </div>
@@ -48,63 +81,88 @@
         <button type="button" data-theme-mode="system" aria-pressed="false">System</button>
         <button type="button" data-theme-mode="custom" aria-pressed="false">Custom</button>
       </div>
+
       <div id="theme-custom" class="theme-custom" hidden>
-        <label class="color-row" for="theme-primary"><span>Primary accent</span><input type="color" id="theme-primary" value="#0033A0" /></label>
-        <label class="color-row" for="theme-page"><span>Page background</span><input type="color" id="theme-page" value="#F8FAFC" /></label>
-        <label class="color-row" for="theme-card"><span>Card surface</span><input type="color" id="theme-card" value="#FFFFFF" /></label>
-        <button type="button" id="theme-reset" class="btn-secondary btn-sm">Reset to AdDU Default</button>
+        <label class="color-row" for="theme-primary">
+          <span>Primary accent</span>
+          <input id="theme-primary" type="color" value="#0033A0" />
+        </label>
+        <label class="color-row" for="theme-page">
+          <span>Page background</span>
+          <input id="theme-page" type="color" value="#F8FAFC" />
+        </label>
+        <label class="color-row" for="theme-card">
+          <span>Card surface</span>
+          <input id="theme-card" type="color" value="#FFFFFF" />
+        </label>
+        <button id="theme-reset" class="btn-secondary btn-sm" type="button">Reset to AdDU Default</button>
       </div>
     </div>
 
     <nav id="mobile-nav-drawer" class="mobile-nav-drawer" aria-label="Mobile Navigation" hidden>
       <div class="container mobile-nav-links">
-        <a href="#sec-tools" class="mobile-link">Modules</a>
-        <a href="#sec-workspace" class="mobile-link">Workspace</a>
-        <a href="#sec-faq" class="mobile-link">FAQ</a>
+        <a class="mobile-link" href="#sec-tools">Modules</a>
+        <a class="mobile-link" href="#sec-workspace">Workspace</a>
+        <a class="mobile-link" href="#sec-faq">FAQ</a>
       </div>
     </nav>
   </header>
 
   <main>
-    <!-- 2. HERO SECTION (Z-PATTERN FLOW) -->
     <section class="hero-section">
       <div class="container hero-grid">
         <div class="hero-copy">
           <h1>Quad Reckoner</h1>
           <p class="hero-sub">A compact workspace for unit conversions, Philippine income tax checks, payroll calculations, and loop visualizations.</p>
           <div class="hero-cta-row">
-            <a href="#sec-workspace" class="btn-primary btn-lg">Open the workspace</a>
-            <button type="button" class="btn-secondary btn-lg" data-open-tab="sec-looping">Loop visualizer</button>
+            <a class="btn-primary btn-lg" href="#sec-workspace">Open the workspace</a>
+            <button class="btn-secondary btn-lg" type="button" data-open-tab="sec-looping">Loop visualizer</button>
           </div>
         </div>
 
-        <!-- INTERACTIVE HERO MINI-PREVIEW CARD -->
         <aside class="hero-preview-card" aria-label="Interactive Live Preview">
-          <div class="preview-card-top">
+          <header class="preview-card-top">
             <div class="preview-dots" aria-hidden="true">
-              <span></span><span></span><span></span>
+              <span></span>
+              <span></span>
+              <span></span>
             </div>
             <div class="preview-mode-tabs" role="tablist" aria-label="Hero Preview Mode">
-              <button type="button" class="preview-tab active" id="hero-tab-fx" data-preview-tab="fx" role="tab" aria-controls="hero-pane-fx" aria-selected="true">
+              <button
+                id="hero-tab-fx"
+                class="preview-tab active"
+                type="button"
+                data-preview-tab="fx"
+                role="tab"
+                aria-controls="hero-pane-fx"
+                aria-selected="true"
+              >
                 Quick FX
               </button>
-              <button type="button" class="preview-tab" id="hero-tab-loop" data-preview-tab="loop" role="tab" aria-controls="hero-pane-loop" aria-selected="false">
+              <button
+                id="hero-tab-loop"
+                class="preview-tab"
+                type="button"
+                data-preview-tab="loop"
+                role="tab"
+                aria-controls="hero-pane-loop"
+                aria-selected="false"
+              >
                 Mini Loop
               </button>
             </div>
-          </div>
+          </header>
 
-          <!-- Hero Pane A: Quick Currency Converter -->
-          <div id="hero-pane-fx" class="preview-pane active" role="tabpanel" aria-labelledby="hero-tab-fx">
-            <div class="preview-pane-header">
+          <section id="hero-pane-fx" class="preview-pane active" role="tabpanel" aria-labelledby="hero-tab-fx">
+            <header class="preview-pane-header">
               <span class="preview-kicker">Live Currency Sandbox</span>
               <span class="preview-status-tag">USD &rarr; PHP</span>
-            </div>
+            </header>
 
             <div class="preview-fx-row">
               <div class="preview-field">
                 <label for="hero-fx-amount">USD Amount</label>
-                <input type="number" id="hero-fx-amount" value="100" min="0" step="any" />
+                <input id="hero-fx-amount" type="number" value="100" min="0" step="any" />
               </div>
               <div class="preview-arrow" aria-hidden="true">&rarr;</div>
               <div class="preview-field">
@@ -114,24 +172,23 @@
             </div>
 
             <p id="hero-fx-rate-note" class="preview-note">1 USD = 58.50 PHP</p>
-            <button type="button" class="btn-secondary btn-sm full-width" data-open-tab="sec-conversion">
+            <button class="btn-secondary btn-sm full-width" type="button" data-open-tab="sec-conversion">
               Open 15-Category Converter &rarr;
             </button>
-          </div>
+          </section>
 
-          <!-- Hero Pane B: Mini Loop Sandbox -->
-          <div id="hero-pane-loop" class="preview-pane" role="tabpanel" aria-labelledby="hero-tab-loop" aria-hidden="true" hidden>
-            <div class="preview-pane-header">
+          <section id="hero-pane-loop" class="preview-pane" role="tabpanel" aria-labelledby="hero-tab-loop" aria-hidden="true" hidden>
+            <header class="preview-pane-header">
               <span class="preview-kicker">Instant Loop Sandbox</span>
               <span class="preview-status-tag">n = 0..15</span>
-            </div>
+            </header>
 
             <div class="preview-loop-controls">
               <div class="preview-field">
                 <label for="hero-loop-n">Test Value (n)</label>
-                <input type="number" id="hero-loop-n" value="5" min="0" max="15" step="1" />
+                <input id="hero-loop-n" type="number" value="5" min="0" max="15" step="1" />
               </div>
-              <button type="button" id="hero-loop-run" class="btn-primary">Compute</button>
+              <button id="hero-loop-run" class="btn-primary" type="button">Compute</button>
             </div>
 
             <div class="preview-mini-metrics">
@@ -149,21 +206,20 @@
               </div>
             </div>
 
-            <button type="button" class="btn-secondary btn-sm full-width" data-open-tab="sec-looping">
+            <button class="btn-secondary btn-sm full-width" type="button" data-open-tab="sec-looping">
               Launch Full 3-View Visualizer &rarr;
             </button>
-          </div>
+          </section>
         </aside>
       </div>
     </section>
 
-    <!-- 3.2 CORE UTILITY SUITE (2x2 BENTO CARD GRID) -->
     <section id="sec-tools" class="page-section">
       <div class="container">
-        <div class="section-heading">
+        <header class="section-heading">
           <h2>Modules</h2>
           <p>Pick one to open it in the workspace.</p>
-        </div>
+        </header>
 
         <div class="bento-grid">
           <article class="bento-card">
@@ -172,7 +228,7 @@
               Convert across Temperature, Length, Weight, Volume, Data, Energy, Pressure, Fuel, and 17 global currencies
               with cross-category search and offline rate caching.
             </p>
-            <button type="button" class="bento-link" data-open-tab="sec-conversion">
+            <button class="bento-link" type="button" data-open-tab="sec-conversion">
               Open Unit Converter &rarr;
             </button>
           </article>
@@ -183,7 +239,7 @@
               Compute Annual or Monthly taxable income against the progressive tax schedule—automatically displaying
               Basic Tax, Excess Rate Tax, Total Tax Payable, and Net Income.
             </p>
-            <button type="button" class="bento-link" data-open-tab="sec-tax">
+            <button class="bento-link" type="button" data-open-tab="sec-tax">
               Open Tax Calculator &rarr;
             </button>
           </article>
@@ -194,7 +250,7 @@
               Trace <code>while</code>, <code>do...while</code>, and <code>for</code> loops simultaneously using
               Execution Tapes, interactive SVG Flowcharts, and Visual Math Block Builders.
             </p>
-            <button type="button" class="bento-link" data-open-tab="sec-looping">
+            <button class="bento-link" type="button" data-open-tab="sec-looping">
               Open Loop Visualizer &rarr;
             </button>
           </article>
@@ -205,7 +261,7 @@
               Record employee days worked, daily rates, and deductions with built-in overpayment guards and automatic
               footer totals for Gross Pay, Deductions, and Net Pay.
             </p>
-            <button type="button" class="bento-link" data-open-tab="sec-payroll">
+            <button class="bento-link" type="button" data-open-tab="sec-payroll">
               Open Payroll Ledger &rarr;
             </button>
           </article>
@@ -213,35 +269,74 @@
       </div>
     </section>
 
-    <!-- 3.3 INTERACTIVE WORKSPACE STAGE + COLLAPSIBLE SCRATCHPAD SIDEBAR -->
     <section id="sec-workspace" class="workspace-wrapper">
       <div class="container">
-        <div class="workspace-top-bar">
-          <div>
-            <h2>Workspace</h2>
-          </div>
+        <header class="workspace-top-bar">
+          <h2>Workspace</h2>
           <button
-            type="button"
             id="toggle-scratchpad-btn"
             class="btn-secondary btn-sm"
+            type="button"
             aria-expanded="true"
             aria-controls="session-scratchpad"
           >
             Hide Scratchpad
           </button>
-        </div>
+        </header>
 
         <div id="workspace-layout" class="workspace-layout">
-          <!-- PRIMARY 4-TAB APPLICATION CONTAINER -->
           <div class="app-shell">
-            <div class="tab-nav" role="tablist" aria-label="Program components">
-              <button type="button" class="nav-btn active" role="tab" id="tab-sec-conversion" data-target="sec-conversion" aria-controls="sec-conversion" aria-selected="true">Conversion</button>
-              <button type="button" class="nav-btn" role="tab" id="tab-sec-tax" data-target="sec-tax" aria-controls="sec-tax" aria-selected="false" tabindex="-1">Income Tax</button>
-              <button type="button" class="nav-btn" role="tab" id="tab-sec-looping" data-target="sec-looping" aria-controls="sec-looping" aria-selected="false" tabindex="-1">Looping</button>
-              <button type="button" class="nav-btn" role="tab" id="tab-sec-payroll" data-target="sec-payroll" aria-controls="sec-payroll" aria-selected="false" tabindex="-1">Payroll</button>
-            </div>
+            <nav class="tab-nav" role="tablist" aria-label="Program components">
+              <button
+                id="tab-sec-conversion"
+                class="nav-btn active"
+                type="button"
+                data-target="sec-conversion"
+                role="tab"
+                aria-controls="sec-conversion"
+                aria-selected="true"
+              >
+                Conversion
+              </button>
+              <button
+                id="tab-sec-tax"
+                class="nav-btn"
+                type="button"
+                data-target="sec-tax"
+                role="tab"
+                tabindex="-1"
+                aria-controls="sec-tax"
+                aria-selected="false"
+              >
+                Income Tax
+              </button>
+              <button
+                id="tab-sec-looping"
+                class="nav-btn"
+                type="button"
+                data-target="sec-looping"
+                role="tab"
+                tabindex="-1"
+                aria-controls="sec-looping"
+                aria-selected="false"
+              >
+                Looping
+              </button>
+              <button
+                id="tab-sec-payroll"
+                class="nav-btn"
+                type="button"
+                data-target="sec-payroll"
+                role="tab"
+                tabindex="-1"
+                aria-controls="sec-payroll"
+                aria-selected="false"
+              >
+                Payroll
+              </button>
+            </nav>
 
-            <!-- COMPONENT 1: MULTI-CATEGORY UNIT CONVERTER -->
+            <!-- Unit Converter -->
             <section id="sec-conversion" class="tool-section active" role="tabpanel" aria-labelledby="tab-sec-conversion" aria-hidden="false">
               <h2>Unit Conversion</h2>
 
@@ -250,19 +345,19 @@
               <div class="conv-controls">
                 <div class="form-group">
                   <label for="conv-input">Value</label>
-                  <input type="number" id="conv-input" step="any" placeholder="e.g., 100" />
+                  <input id="conv-input" type="number" step="any" placeholder="e.g., 100" />
                 </div>
 
                 <div class="form-group">
                   <label for="conv-search">Search All Units</label>
                   <div class="search-wrap">
                     <input
-                      type="search"
                       id="conv-search"
+                      type="search"
                       placeholder="Search name or symbol (e.g., °F, ft, kWh, PSI)..."
                       autocomplete="off"
                     />
-                    <button type="button" id="conv-search-clear" class="btn-clear-search" aria-label="Clear search" hidden>
+                    <button id="conv-search-clear" class="btn-clear-search" type="button" aria-label="Clear search" hidden>
                       &times;
                     </button>
                   </div>
@@ -275,7 +370,7 @@
                   <select id="conv-from"></select>
                 </div>
 
-                <button type="button" id="conv-swap-btn" class="btn-secondary conv-swap">Swap Units</button>
+                <button id="conv-swap-btn" class="btn-secondary conv-swap" type="button">Swap Units</button>
 
                 <div class="form-group">
                   <label for="conv-to">To Unit</label>
@@ -283,7 +378,7 @@
                 </div>
               </div>
 
-              <p class="error-msg" id="conv-error" role="alert" aria-live="assertive"></p>
+              <p id="conv-error" class="error-msg" role="alert" aria-live="assertive"></p>
 
               <div class="result-box" aria-live="polite">
                 <p class="result-headline">Result: <strong><span id="conv-result">0.00 °F</span></strong></p>
@@ -291,53 +386,53 @@
               </div>
 
               <div class="unit-browser">
-                <div class="unit-browser-header">
+                <header class="unit-browser-header">
                   <span id="conv-list-label">Temperature Units (Click to set target unit)</span>
                   <small id="conv-list-count">3 units</small>
-                </div>
+                </header>
                 <div id="conv-unit-list" class="unit-list" role="listbox" aria-label="Available Units"></div>
               </div>
             </section>
 
-            <!-- COMPONENT 2: INCOME TAX CALCULATOR -->
+            <!-- Income Tax Calculator -->
             <section id="sec-tax" class="tool-section" role="tabpanel" aria-labelledby="tab-sec-tax" aria-hidden="true" hidden>
-              <div class="tax-header-row">
+              <header class="tax-header-row">
                 <div>
                   <h2>Income Tax Calculator</h2>
                   <p class="tax-formula-note">Formula: <strong>Income Tax = Basic Tax + Rate on Excess</strong></p>
                 </div>
                 <button
-                  type="button"
                   id="tax-table-toggle"
                   class="btn-secondary btn-sm"
+                  type="button"
                   aria-expanded="true"
                   aria-controls="tax-ref-panel"
                 >
                   Hide Tax Table
                 </button>
-              </div>
+              </header>
 
-              <form id="tax-form" novalidate onsubmit="event.preventDefault()">
-              <div class="conv-controls">
-                <div class="form-group">
-                  <label for="tax-period">Income Period</label>
-                  <select id="tax-period">
-                    <option value="annual">Annual Taxable Income</option>
-                    <option value="monthly">Monthly Taxable Income (Auto &times; 12)</option>
-                  </select>
+              <form id="tax-form" novalidate>
+                <div class="conv-controls">
+                  <div class="form-group">
+                    <label for="tax-period">Income Period</label>
+                    <select id="tax-period">
+                      <option value="annual">Annual Taxable Income</option>
+                      <option value="monthly">Monthly Taxable Income (Auto &times; 12)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="tax-income">Taxable Income (&#8369;)</label>
+                    <input id="tax-income" type="number" min="0" step="any" placeholder="e.g., 320000" />
+                  </div>
                 </div>
-                <div class="form-group">
-                  <label for="tax-income">Taxable Income (&#8369;)</label>
-                  <input type="number" id="tax-income" min="0" step="any" placeholder="e.g., 320000" />
-                </div>
-              </div>
 
-              <div class="btn-row">
-                <button type="submit" id="tax-calc-btn" class="btn-primary">Compute Income Tax</button>
-              </div>
+                <div class="btn-row">
+                  <button id="tax-calc-btn" class="btn-primary" type="submit">Compute Income Tax</button>
+                </div>
               </form>
 
-              <p class="error-msg" id="tax-error" role="alert" aria-live="assertive"></p>
+              <p id="tax-error" class="error-msg" role="alert" aria-live="assertive"></p>
 
               <div class="result-box" aria-live="polite">
                 <p>Applicable Bracket: <strong><span id="tax-bracket">-</span></strong></p>
@@ -346,12 +441,11 @@
                 <p>Net Annual Income: <strong><span id="tax-net">&#8369;0.00</span></strong></p>
               </div>
 
-              <!-- REFERENCE TAX SCHEDULE TABLE & QUICK EXAMPLE TESTER -->
               <div id="tax-ref-panel" class="tax-ref-panel">
-                <div class="unit-browser-header">
+                <header class="unit-browser-header">
                   <span>Income Tax Reference Schedule (Click any example row to test)</span>
                   <small>6 Brackets</small>
-                </div>
+                </header>
                 <div class="tax-table-scroll">
                   <table class="tax-ref-table">
                     <thead>
@@ -364,42 +458,42 @@
                       </tr>
                     </thead>
                     <tbody id="tax-ref-tbody">
-                      <tr data-sample="180000" tabindex="0" role="button" aria-label="Test sample income 180,000">
+                      <tr data-sample="180000" role="button" tabindex="0" aria-label="Test sample income 180,000">
                         <td>&ndash;</td>
                         <td>&#8369;250,000</td>
                         <td>0%</td>
                         <td>&#8369;180,000.00</td>
                         <td><strong>&#8369;0.00</strong></td>
                       </tr>
-                      <tr data-sample="320000" tabindex="0" role="button" aria-label="Test sample income 320,000">
+                      <tr data-sample="320000" role="button" tabindex="0" aria-label="Test sample income 320,000">
                         <td>&#8369;250,000</td>
                         <td>&#8369;400,000</td>
                         <td>20% of the excess over &#8369;250,000</td>
                         <td>&#8369;320,000.00</td>
                         <td><strong>&#8369;14,000.00</strong></td>
                       </tr>
-                      <tr data-sample="520000" tabindex="0" role="button" aria-label="Test sample income 520,000">
+                      <tr data-sample="520000" role="button" tabindex="0" aria-label="Test sample income 520,000">
                         <td>&#8369;400,000</td>
                         <td>&#8369;800,000</td>
                         <td>&#8369;30,000 + 25% of the excess over &#8369;400,000</td>
                         <td>&#8369;520,000.00</td>
                         <td><strong>&#8369;60,000.00</strong></td>
                       </tr>
-                      <tr data-sample="930000" tabindex="0" role="button" aria-label="Test sample income 930,000">
+                      <tr data-sample="930000" role="button" tabindex="0" aria-label="Test sample income 930,000">
                         <td>&#8369;800,000</td>
                         <td>&#8369;2,000,000</td>
                         <td>&#8369;130,000 + 30% of the excess over &#8369;800,000</td>
                         <td>&#8369;930,000.00</td>
                         <td><strong>&#8369;169,000.00</strong></td>
                       </tr>
-                      <tr data-sample="2400000" tabindex="0" role="button" aria-label="Test sample income 2,400,000">
+                      <tr data-sample="2400000" role="button" tabindex="0" aria-label="Test sample income 2,400,000">
                         <td>&#8369;2,000,000</td>
                         <td>&#8369;8,000,000</td>
                         <td>&#8369;490,000 + 32% of the excess over &#8369;2,000,000</td>
                         <td>&#8369;2,400,000.00</td>
                         <td><strong>&#8369;618,000.00</strong></td>
                       </tr>
-                      <tr data-sample="10000000" tabindex="0" role="button" aria-label="Test sample income 10,000,000">
+                      <tr data-sample="10000000" role="button" tabindex="0" aria-label="Test sample income 10,000,000">
                         <td>&#8369;8,000,000</td>
                         <td>&ndash;</td>
                         <td>&#8369;2,410,000 + 35% of the excess over &#8369;8,000,000</td>
@@ -412,34 +506,34 @@
               </div>
             </section>
 
-            <!-- COMPONENT 3: LOOPING CONSTRUCTS + ALL 3 VISUALIZERS -->
+            <!-- Looping Constructs Visualizer -->
             <section id="sec-looping" class="tool-section" role="tabpanel" aria-labelledby="tab-sec-looping" aria-hidden="true" hidden>
               <h2>Looping Constructs</h2>
 
-              <form id="loop-form" novalidate onsubmit="event.preventDefault()">
-              <div class="loop-controls-row">
-                <div class="form-group">
-                  <label for="loop-n">Whole Number (n &ge; 0)</label>
-                  <input type="number" id="loop-n" min="0" max="170" step="1" placeholder="e.g., 5" />
+              <form id="loop-form" novalidate>
+                <div class="loop-controls-row">
+                  <div class="form-group">
+                    <label for="loop-n">Whole Number (n &ge; 0)</label>
+                    <input id="loop-n" type="number" min="0" max="170" step="1" placeholder="e.g., 5" />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="loop-speed">Animation Speed</label>
+                    <select id="loop-speed">
+                      <option value="340">Normal (Step-by-Step)</option>
+                      <option value="115">Fast</option>
+                      <option value="0">Instant</option>
+                    </select>
+                  </div>
                 </div>
 
-                <div class="form-group">
-                  <label for="loop-speed">Animation Speed</label>
-                  <select id="loop-speed">
-                    <option value="340">Normal (Step-by-Step)</option>
-                    <option value="115">Fast</option>
-                    <option value="0">Instant</option>
-                  </select>
+                <div class="btn-row">
+                  <button id="loop-calc-btn" class="btn-primary" type="submit">Run All Loops</button>
+                  <button id="loop-replay-btn" class="btn-secondary" type="button" disabled>Replay Animations</button>
                 </div>
-              </div>
-
-              <div class="btn-row">
-                <button type="submit" id="loop-calc-btn" class="btn-primary">Run All Loops</button>
-                <button type="button" id="loop-replay-btn" class="btn-secondary" disabled>Replay Animations</button>
-              </div>
               </form>
 
-              <p class="error-msg" id="loop-error" role="alert" aria-live="assertive"></p>
+              <p id="loop-error" class="error-msg" role="alert" aria-live="assertive"></p>
 
               <div class="result-box" aria-live="polite">
                 <p>Factorial (While Loop): <strong><span id="loop-factorial">-</span></strong></p>
@@ -447,47 +541,46 @@
                 <p>Average of 1 to n (For Loop): <strong><span id="loop-avg">-</span></strong></p>
               </div>
 
-              <!-- DISPLAY SELECTOR (SHOW / HIDE ANY OF THE 3 VISUALIZERS) -->
               <div class="loop-view-bar">
                 <div class="loop-view-top">
                   <span class="loop-view-label">Loop Visualization Displays (Show / Hide):</span>
                   <small class="loop-view-hint">Toggle individual displays on/off, or click "Only This" on any panel.</small>
                 </div>
                 <div id="loop-view-bar" class="cat-pills loop-view-pills" role="group" aria-label="Loop Visualization Displays">
-                  <button type="button" class="cat-pill active" data-view-action="all">Show All (3)</button>
-                  <button type="button" class="cat-pill active" data-view-toggle="tape" aria-pressed="true">&#10003; 1. Execution Tape</button>
-                  <button type="button" class="cat-pill active" data-view-toggle="flow" aria-pressed="true">&#10003; 2. Control-Flow Flowcharts</button>
-                  <button type="button" class="cat-pill active" data-view-toggle="builder" aria-pressed="true">&#10003; 3. Visual Block Builder</button>
+                  <button class="cat-pill active" type="button" data-view-action="all">Show All (3)</button>
+                  <button class="cat-pill active" type="button" data-view-toggle="tape" aria-pressed="true">&#10003; 1. Execution Tape</button>
+                  <button class="cat-pill active" type="button" data-view-toggle="flow" aria-pressed="true">&#10003; 2. Control-Flow Flowcharts</button>
+                  <button class="cat-pill active" type="button" data-view-toggle="builder" aria-pressed="true">&#10003; 3. Visual Block Builder</button>
                 </div>
               </div>
 
               <div id="loop-views-hidden-notice" class="loop-hidden-notice" hidden>
                 <p>All three loop visualization displays are currently hidden.</p>
-                <button type="button" id="loop-show-all-btn" class="btn-secondary">Show All (3) Displays</button>
+                <button id="loop-show-all-btn" class="btn-secondary" type="button">Show All (3) Displays</button>
               </div>
 
-              <!-- DISPLAY 1: EXECUTION TAPE VISUALIZER -->
+              <!-- Display 1: Execution Tape -->
               <section id="loop-view-tape" class="loop-view-panel" data-view="tape" aria-label="Execution Tape Display">
-                <div class="loop-view-header">
+                <header class="loop-view-header">
                   <div>
                     <h3>Display 1: Execution Tape Visualizer</h3>
                     <p class="loop-view-desc">Step-by-step memory tape—click any pass cell to inspect its state.</p>
                   </div>
                   <div class="loop-view-actions">
-                    <button type="button" class="view-action-btn" data-focus-view="tape">Only This</button>
-                    <button type="button" class="view-action-btn" data-hide-view="tape">Hide</button>
+                    <button class="view-action-btn" type="button" data-focus-view="tape">Only This</button>
+                    <button class="view-action-btn" type="button" data-hide-view="tape">Hide</button>
                   </div>
-                </div>
+                </header>
 
                 <div class="tape-stack">
                   <article class="tape-card" aria-label="While Loop Execution Tape">
-                    <div class="tape-card-header">
+                    <header class="tape-card-header">
                       <div>
                         <h4>1. nth Factorial</h4>
                         <span class="tape-subtitle">Entry-controlled: checks condition before every pass</span>
                       </div>
                       <code class="code-tag">while (i &lt;= n)</code>
-                    </div>
+                    </header>
                     <div class="tape-trace-bar">
                       <span id="trace-expr-fact" class="trace-expr">Ready: enter n and click Run All Loops</span>
                       <span id="trace-status-fact" class="trace-badge">Idle</span>
@@ -496,13 +589,13 @@
                   </article>
 
                   <article class="tape-card" aria-label="Do-While Loop Execution Tape">
-                    <div class="tape-card-header">
+                    <header class="tape-card-header">
                       <div>
                         <h4>2. Sum of First n Numbers</h4>
                         <span class="tape-subtitle">Exit-controlled: executes body at least once before checking</span>
                       </div>
                       <code class="code-tag">do { ... } while (i &lt;= n)</code>
-                    </div>
+                    </header>
                     <div class="tape-trace-bar">
                       <span id="trace-expr-sum" class="trace-expr">Ready: enter n and click Run All Loops</span>
                       <span id="trace-status-sum" class="trace-badge">Idle</span>
@@ -511,13 +604,13 @@
                   </article>
 
                   <article class="tape-card" aria-label="For Loop Execution Tape">
-                    <div class="tape-card-header">
+                    <header class="tape-card-header">
                       <div>
                         <h4>3. Average of First n Numbers</h4>
                         <span class="tape-subtitle">Counter-controlled: initializes, tests, and increments k</span>
                       </div>
                       <code class="code-tag">for (let k = 1; k &lt;= n; k++)</code>
-                    </div>
+                    </header>
                     <div class="tape-trace-bar">
                       <span id="trace-expr-avg" class="trace-expr">Ready: enter n and click Run All Loops</span>
                       <span id="trace-status-avg" class="trace-badge">Idle</span>
@@ -527,26 +620,25 @@
                 </div>
               </section>
 
-              <!-- DISPLAY 2: INTERACTIVE CONTROL-FLOW FLOWCHARTS -->
+              <!-- Display 2: Control-Flow Flowcharts -->
               <section id="loop-view-flow" class="loop-view-panel" data-view="flow" aria-label="Control-Flow Flowcharts Display">
-                <div class="loop-view-header">
+                <header class="loop-view-header">
                   <div>
                     <h3>Display 2: Interactive Control-Flow Flowcharts</h3>
                     <p class="loop-view-desc">Traces decision diamonds and loop-back branches—click any node to inspect how it executes.</p>
                   </div>
                   <div class="loop-view-actions">
-                    <button type="button" class="view-action-btn" data-focus-view="flow">Only This</button>
-                    <button type="button" class="view-action-btn" data-hide-view="flow">Hide</button>
+                    <button class="view-action-btn" type="button" data-focus-view="flow">Only This</button>
+                    <button class="view-action-btn" type="button" data-hide-view="flow">Hide</button>
                   </div>
-                </div>
+                </header>
 
                 <div class="flowchart-grid">
-                  <!-- 2.1 WHILE LOOP FLOWCHART -->
                   <article class="flow-card" data-loop="fact" aria-label="While Loop Flowchart">
-                    <div class="flow-card-header">
+                    <header class="flow-card-header">
                       <h4>1. Factorial (While)</h4>
                       <span id="flow-badge-fact" class="flow-badge">Entry-Controlled</span>
-                    </div>
+                    </header>
                     <p id="flow-readout-fact" class="flow-readout">Ready: enter n and click Run All Loops</p>
                     <svg class="flow-svg" viewBox="0 0 280 350" role="img" aria-label="While loop control-flow diagram">
                       <g class="flow-edge" data-edge="init-cond">
@@ -556,44 +648,43 @@
                       <g class="flow-edge" data-edge="cond-body">
                         <path d="M 145 152 L 145 184" />
                         <polygon points="145,190 140,181 150,181" />
-                        <text x="153" y="174" class="flow-branch-label">True</text>
+                        <text class="flow-branch-label" x="153" y="174">True</text>
                       </g>
                       <g class="flow-edge" data-edge="body-cond">
                         <path d="M 60 212 L 28 212 L 28 118 L 69 118" />
                         <polygon points="75,118 66,113 66,123" />
-                        <text x="8" y="168" class="flow-branch-label">Loop</text>
+                        <text class="flow-branch-label" x="8" y="168">Loop</text>
                       </g>
                       <g class="flow-edge" data-edge="cond-exit">
                         <path d="M 215 118 L 252 118 L 252 308 L 231 308" />
                         <polygon points="225,308 234,303 234,313" />
-                        <text x="220" y="110" class="flow-branch-label">False</text>
+                        <text class="flow-branch-label" x="220" y="110">False</text>
                       </g>
 
-                      <g class="flow-node" data-node="init" tabindex="0" role="button" aria-label="While Init Node">
+                      <g class="flow-node" data-node="init" role="button" tabindex="0" aria-label="While Init Node">
                         <rect x="65" y="14" width="160" height="38" rx="19" />
                         <text x="145" y="37">Init: result=1, i=1</text>
                       </g>
-                      <g class="flow-node" data-node="cond" tabindex="0" role="button" aria-label="While Condition Diamond">
+                      <g class="flow-node" data-node="cond" role="button" tabindex="0" aria-label="While Condition Diamond">
                         <polygon points="145,84 215,118 145,152 75,118" />
                         <text x="145" y="122">i &lt;= n ?</text>
                       </g>
-                      <g class="flow-node" data-node="body" tabindex="0" role="button" aria-label="While Body Node">
+                      <g class="flow-node" data-node="body" role="button" tabindex="0" aria-label="While Body Node">
                         <rect x="60" y="190" width="170" height="44" rx="8" />
                         <text x="145" y="216">result *= i; i++</text>
                       </g>
-                      <g class="flow-node" data-node="exit" tabindex="0" role="button" aria-label="While Exit Node">
+                      <g class="flow-node" data-node="exit" role="button" tabindex="0" aria-label="While Exit Node">
                         <rect x="65" y="289" width="160" height="38" rx="19" />
                         <text x="145" y="312">Exit: return result</text>
                       </g>
                     </svg>
                   </article>
 
-                  <!-- 2.2 DO...WHILE LOOP FLOWCHART -->
                   <article class="flow-card" data-loop="sum" aria-label="Do-While Loop Flowchart">
-                    <div class="flow-card-header">
+                    <header class="flow-card-header">
                       <h4>2. Sum (Do-While)</h4>
                       <span id="flow-badge-sum" class="flow-badge">Exit-Controlled</span>
-                    </div>
+                    </header>
                     <p id="flow-readout-sum" class="flow-readout">Ready: enter n and click Run All Loops</p>
                     <svg class="flow-svg" viewBox="0 0 280 350" role="img" aria-label="Do-while loop control-flow diagram">
                       <g class="flow-edge" data-edge="init-body">
@@ -607,39 +698,38 @@
                       <g class="flow-edge" data-edge="cond-body">
                         <path d="M 75 202 L 28 202 L 28 110 L 54 110" />
                         <polygon points="60,110 51,105 51,115" />
-                        <text x="8" y="160" class="flow-branch-label">True</text>
+                        <text class="flow-branch-label" x="8" y="160">True</text>
                       </g>
                       <g class="flow-edge" data-edge="cond-exit">
                         <path d="M 145 236 L 145 283" />
                         <polygon points="145,289 140,280 150,280" />
-                        <text x="153" y="266" class="flow-branch-label">False</text>
+                        <text class="flow-branch-label" x="153" y="266">False</text>
                       </g>
 
-                      <g class="flow-node" data-node="init" tabindex="0" role="button" aria-label="Do-While Init Node">
+                      <g class="flow-node" data-node="init" role="button" tabindex="0" aria-label="Do-While Init Node">
                         <rect x="65" y="14" width="160" height="38" rx="19" />
                         <text x="145" y="37">Init: total=0, i=0</text>
                       </g>
-                      <g class="flow-node" data-node="body" tabindex="0" role="button" aria-label="Do-While Body Node">
+                      <g class="flow-node" data-node="body" role="button" tabindex="0" aria-label="Do-While Body Node">
                         <rect x="60" y="88" width="170" height="44" rx="8" />
                         <text x="145" y="114">total += i; i++</text>
                       </g>
-                      <g class="flow-node" data-node="cond" tabindex="0" role="button" aria-label="Do-While Condition Diamond">
+                      <g class="flow-node" data-node="cond" role="button" tabindex="0" aria-label="Do-While Condition Diamond">
                         <polygon points="145,168 215,202 145,236 75,202" />
                         <text x="145" y="206">i &lt;= n ?</text>
                       </g>
-                      <g class="flow-node" data-node="exit" tabindex="0" role="button" aria-label="Do-While Exit Node">
+                      <g class="flow-node" data-node="exit" role="button" tabindex="0" aria-label="Do-While Exit Node">
                         <rect x="65" y="289" width="160" height="38" rx="19" />
                         <text x="145" y="312">Exit: return total</text>
                       </g>
                     </svg>
                   </article>
 
-                  <!-- 2.3 FOR LOOP FLOWCHART -->
                   <article class="flow-card" data-loop="avg" aria-label="For Loop Flowchart">
-                    <div class="flow-card-header">
+                    <header class="flow-card-header">
                       <h4>3. Average (For)</h4>
                       <span id="flow-badge-avg" class="flow-badge">Counter-Controlled</span>
-                    </div>
+                    </header>
                     <p id="flow-readout-avg" class="flow-readout">Ready: enter n and click Run All Loops</p>
                     <svg class="flow-svg" viewBox="0 0 280 350" role="img" aria-label="For loop control-flow diagram">
                       <g class="flow-edge" data-edge="init-cond">
@@ -649,7 +739,7 @@
                       <g class="flow-edge" data-edge="cond-body">
                         <path d="M 145 130 L 145 154" />
                         <polygon points="145,160 140,151 150,151" />
-                        <text x="153" y="148" class="flow-branch-label">True</text>
+                        <text class="flow-branch-label" x="153" y="148">True</text>
                       </g>
                       <g class="flow-edge" data-edge="body-inc">
                         <path d="M 145 196 L 145 218" />
@@ -658,31 +748,31 @@
                       <g class="flow-edge" data-edge="inc-cond">
                         <path d="M 75 241 L 28 241 L 28 100 L 69 100" />
                         <polygon points="75,100 66,95 66,105" />
-                        <text x="8" y="174" class="flow-branch-label">Loop</text>
+                        <text class="flow-branch-label" x="8" y="174">Loop</text>
                       </g>
                       <g class="flow-edge" data-edge="cond-exit">
                         <path d="M 215 100 L 252 100 L 252 312 L 231 312" />
                         <polygon points="225,312 234,307 234,317" />
-                        <text x="220" y="92" class="flow-branch-label">False</text>
+                        <text class="flow-branch-label" x="220" y="92">False</text>
                       </g>
 
-                      <g class="flow-node" data-node="init" tabindex="0" role="button" aria-label="For Init Node">
+                      <g class="flow-node" data-node="init" role="button" tabindex="0" aria-label="For Init Node">
                         <rect x="65" y="10" width="160" height="34" rx="17" />
                         <text x="145" y="31">Init: total=0, k=1</text>
                       </g>
-                      <g class="flow-node" data-node="cond" tabindex="0" role="button" aria-label="For Test Diamond">
+                      <g class="flow-node" data-node="cond" role="button" tabindex="0" aria-label="For Test Diamond">
                         <polygon points="145,70 215,100 145,130 75,100" />
                         <text x="145" y="104">k &lt;= n ?</text>
                       </g>
-                      <g class="flow-node" data-node="body" tabindex="0" role="button" aria-label="For Body Node">
+                      <g class="flow-node" data-node="body" role="button" tabindex="0" aria-label="For Body Node">
                         <rect x="65" y="160" width="160" height="36" rx="8" />
                         <text x="145" y="182">Body: total += k</text>
                       </g>
-                      <g class="flow-node" data-node="inc" tabindex="0" role="button" aria-label="For Increment Node">
+                      <g class="flow-node" data-node="inc" role="button" tabindex="0" aria-label="For Increment Node">
                         <rect x="75" y="224" width="140" height="34" rx="8" />
                         <text x="145" y="245">Update: k++</text>
                       </g>
-                      <g class="flow-node" data-node="exit" tabindex="0" role="button" aria-label="For Exit Node">
+                      <g class="flow-node" data-node="exit" role="button" tabindex="0" aria-label="For Exit Node">
                         <rect x="65" y="295" width="160" height="34" rx="17" />
                         <text x="145" y="316">Exit: total / n</text>
                       </g>
@@ -691,28 +781,28 @@
                 </div>
               </section>
 
-              <!-- DISPLAY 3: VISUAL MATH BLOCK BUILDER -->
+              <!-- Display 3: Visual Math Block Builder -->
               <section id="loop-view-builder" class="loop-view-panel" data-view="builder" aria-label="Visual Math Block Builder Display">
-                <div class="loop-view-header">
+                <header class="loop-view-header">
                   <div>
                     <h3>Display 3: Visual Math Block Builder</h3>
                     <p class="loop-view-desc">Builds multiplying clusters, growing staircases, and leveled average bars.</p>
                   </div>
                   <div class="loop-view-actions">
-                    <button type="button" class="view-action-btn" data-focus-view="builder">Only This</button>
-                    <button type="button" class="view-action-btn" data-hide-view="builder">Hide</button>
+                    <button class="view-action-btn" type="button" data-focus-view="builder">Only This</button>
+                    <button class="view-action-btn" type="button" data-hide-view="builder">Hide</button>
                   </div>
-                </div>
+                </header>
 
                 <div class="builder-stack">
                   <article class="builder-card" aria-label="Factorial Block Multiplier">
-                    <div class="builder-card-header">
+                    <header class="builder-card-header">
                       <div>
                         <h4>1. nth Factorial &mdash; Multiplying Block Clusters</h4>
                         <span class="builder-subtitle">Each while-loop pass multiplies the previous block group by i</span>
                       </div>
                       <code class="code-tag">while (i &lt;= n)</code>
-                    </div>
+                    </header>
                     <div class="builder-status-bar">
                       <span id="builder-expr-fact" class="builder-expr">Ready: enter n and click Run All Loops</span>
                       <span id="builder-badge-fact" class="builder-badge">Idle</span>
@@ -721,13 +811,13 @@
                   </article>
 
                   <article class="builder-card" aria-label="Sum Staircase Builder">
-                    <div class="builder-card-header">
+                    <header class="builder-card-header">
                       <div>
                         <h4>2. Sum of First n Numbers &mdash; Growing Staircase</h4>
                         <span class="builder-subtitle">Starts at i = 0 (do-while entry), then stacks columns 1 through n</span>
                       </div>
                       <code class="code-tag">do { ... } while (i &lt;= n)</code>
-                    </div>
+                    </header>
                     <div class="builder-status-bar">
                       <span id="builder-expr-sum" class="builder-expr">Ready: enter n and click Run All Loops</span>
                       <span id="builder-badge-sum" class="builder-badge">Idle</span>
@@ -736,13 +826,13 @@
                   </article>
 
                   <article class="builder-card" aria-label="Average Leveling Bars">
-                    <div class="builder-card-header">
+                    <header class="builder-card-header">
                       <div>
                         <h4>3. Average of First n Numbers &mdash; Staircase &amp; Leveling Bars</h4>
                         <span class="builder-subtitle">Accumulates all n columns in a for-loop, then levels them to equal height</span>
                       </div>
                       <code class="code-tag">for (let k = 1; k &lt;= n; k++)</code>
-                    </div>
+                    </header>
                     <div class="builder-status-bar">
                       <span id="builder-expr-avg" class="builder-expr">Ready: enter n and click Run All Loops</span>
                       <span id="builder-badge-avg" class="builder-badge">Idle</span>
@@ -753,32 +843,33 @@
               </section>
             </section>
 
-            <!-- COMPONENT 4: PAYROLL SYSTEM -->
+            <!-- Payroll System -->
             <section id="sec-payroll" class="tool-section" role="tabpanel" aria-labelledby="tab-sec-payroll" aria-hidden="true" hidden>
               <h2>Payroll System</h2>
+
               <form id="pay-form">
                 <div class="form-group">
                   <label for="pay-name">Employee Name</label>
-                  <input type="text" id="pay-name" required placeholder="e.g., Juan Dela Cruz" />
+                  <input id="pay-name" type="text" placeholder="e.g., Juan Dela Cruz" required />
                 </div>
                 <div class="form-group">
                   <label for="pay-days">Days Worked</label>
-                  <input type="number" id="pay-days" min="0" step="any" required placeholder="e.g., 15" />
+                  <input id="pay-days" type="number" min="0" step="any" placeholder="e.g., 15" required />
                 </div>
                 <div class="form-group">
                   <label for="pay-rate">Daily Rate (&#8369;)</label>
-                  <input type="number" id="pay-rate" min="0" step="any" required placeholder="e.g., 650" />
+                  <input id="pay-rate" type="number" min="0" step="any" placeholder="e.g., 650" required />
                 </div>
                 <div class="form-group">
                   <label for="pay-deduct">Deduction (&#8369;)</label>
-                  <input type="number" id="pay-deduct" min="0" step="any" value="0" required />
+                  <input id="pay-deduct" type="number" value="0" min="0" step="any" required />
                 </div>
                 <div class="btn-row">
-                  <button type="submit" class="btn-primary">Add Employee</button>
-                  <button type="button" id="pay-clear-btn" class="btn-danger">Clear All</button>
-                  <button type="button" id="pay-sample-btn" class="btn-ghost">Load sample data</button>
+                  <button class="btn-primary" type="submit">Add Employee</button>
+                  <button id="pay-clear-btn" class="btn-danger" type="button">Clear All</button>
+                  <button id="pay-sample-btn" class="btn-ghost" type="button">Load sample data</button>
                 </div>
-                <p class="error-msg" id="pay-error" role="alert" aria-live="assertive"></p>
+                <p id="pay-error" class="error-msg" role="alert" aria-live="assertive"></p>
               </form>
 
               <div class="table-wrapper">
@@ -810,34 +901,32 @@
             </section>
           </div>
 
-          <!-- 4. COLLAPSIBLE SESSION SCRATCHPAD SIDEBAR -->
           <aside id="session-scratchpad" class="scratchpad-rail" aria-label="Session Scratchpad">
-            <div class="scratchpad-header">
+            <header class="scratchpad-header">
               <h3>Session Scratchpad</h3>
-              <button type="button" id="clear-history-btn" class="view-action-btn">Clear</button>
-            </div>
+              <button id="clear-history-btn" class="view-action-btn" type="button">Clear</button>
+            </header>
             <p class="scratchpad-sub">Select an entry to reload its inputs.</p>
 
             <ul id="scratchpad-list" class="scratchpad-list">
               <li class="scratchpad-empty">Run any calculation to log it here.</li>
             </ul>
 
-            <div class="scratchpad-notes">
+            <section class="scratchpad-notes" aria-labelledby="qc-title">
               <h4 id="qc-title">Quick constants</h4>
               <ul id="qc-list" class="qc-list"></ul>
-            </div>
+            </section>
           </aside>
         </div>
       </div>
     </section>
 
-    <!-- 3.7 FREQUENTLY ASKED QUESTIONS (FAQ ACCORDION) -->
     <section id="sec-faq" class="page-section">
       <div class="container faq-container">
-        <div class="section-heading">
+        <header class="section-heading">
           <span class="section-eyebrow">FAQ</span>
           <h2>Frequently Asked Questions</h2>
-        </div>
+        </header>
 
         <div class="faq-list">
           <details class="faq-item" open>
@@ -876,17 +965,17 @@
         </div>
       </div>
     </section>
+  </main>
 
-    </main>
-
-  <!-- 5. MAIN 4-COLUMN FOOTER -->
   <footer class="site-footer">
     <div class="container footer-simple">
-      <div class="footer-brand-row"><img src="./logo.png" alt="" width="32" height="32" class="footer-logo" /><strong>Quad Reckoner</strong></div>
+      <div class="footer-brand-row">
+        <img class="footer-logo" src="./logo.png" alt="" width="32" height="32" />
+        <strong>Quad Reckoner</strong>
+      </div>
       <p class="footer-note">Runs entirely in your browser. Only the exchange-rate lookup goes online, and it sends none of your inputs.</p>
       <p class="footer-credit">Logo courtesy of Ateneo de Davao University.</p>
     </div>
   </footer>
 </body>
 </html>
-
